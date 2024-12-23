@@ -24,7 +24,6 @@ class Common extends \Twig\Extension\AbstractExtension {
 			new \Twig\TwigFilter('date', [$this, 'date_filter'], ['needs_environment' => true, 'is_safe' => ['html']]),
 			new \Twig\TwigFilter('datetime', [$this, 'datetime_filter'], ['needs_environment' => true, 'is_safe' => ['html']]),
 			new \Twig\TwigFilter('filesize', [$this, 'filesize_filter'], ['needs_environment' => true, 'is_safe' => ['html']]),
-			new \Twig\TwigFilter('rewrite', [$this, 'rewrite_filter'], ['needs_environment' => true, 'is_safe' => ['html']]),
 			new \Twig\TwigFilter('object_sort', [$this, 'object_sort_filter'], ['needs_environment' => true, 'is_safe' => ['html']]),
 			new \Twig\TwigFilter('get_class', [$this, 'get_class_filter'], ['is_safe' => ['html']]),
 			new \Twig\TwigFilter('reverse_rewrite', [$this, 'reverse_rewrite_filter'], ['is_safe' => ['html']]),
@@ -64,7 +63,8 @@ class Common extends \Twig\Extension\AbstractExtension {
 	 * @return string $reverse_rewrite
 	 */
 	public function reverse_rewrite_filter($value, $raw = true) {
-		return \Skeleton\Core\Util::rewrite_reverse($value);
+		$application = \Skeleton\Core\Application::get();
+		return $application->call_event('rewrite', 'reverse_uri', [$value]);
 	}
 
 	/**
@@ -188,20 +188,6 @@ class Common extends \Twig\Extension\AbstractExtension {
 		}
 
 		return $filesize;
-	}
-
-	/**
-	 * Filter rewrite
-	 *
-	 * @param string $url
-	 * @return string $output
-	 */
-	public function rewrite_filter(\Twig\Environment $env, $url) {
-		if (class_exists('\Skeleton\Core\Util')) {
-			return \Skeleton\Core\Util::rewrite_reverse($url);
-		}
-
-		return $url;
 	}
 
 	/**
